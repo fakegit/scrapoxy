@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Git leaks
+gitleaks protect --verbose --redact --staged
+
+# Update versions
+node .husky/version.js
+git add package-lock.json
+
+# Lint-staged
+npx lint-staged --concurrent false --relative

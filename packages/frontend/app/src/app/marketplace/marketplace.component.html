@@ -1,0 +1,81 @@
+<div class="header">
+    <c-container fluid>
+        <c-breadcrumb>
+            <c-breadcrumb-item [url]="['/']">Home</c-breadcrumb-item>
+            <c-breadcrumb-item [url]="['/projects']">Projects</c-breadcrumb-item>
+            <c-breadcrumb-item [url]="['/projects', projectId]">
+                {{ projectName }}
+            </c-breadcrumb-item>
+            <c-breadcrumb-item [active]="true">Marketplace</c-breadcrumb-item>
+        </c-breadcrumb>
+    </c-container>
+</div>
+
+<c-container fluid class="container-main loading" [ngClass]="{finished: connectorsLoaded}">
+    <c-row>
+        <c-col md="12">
+            <c-input-group class="main">
+                <button cButton color="secondary" variant="outline">
+                    <svg cIcon name="cilZoom"></svg>
+                </button>
+
+                <input
+                    class="form-control"
+                    type="text"
+                    placeholder="Search a provider"
+                    autocomplete="off"
+                    data-form-type="other"
+                    data-lpignore="true"
+                    (input)="onSearchInput($event)" />
+            </c-input-group>
+        </c-col>
+    </c-row>
+
+    <c-row>
+        @for (connector of connectorsFiltered; track connector.key) {
+            <c-col md="4" xl="4">
+                <c-card class="card-provider">
+                    <c-card-body>
+                        <div class="provider-image">
+                            <img
+                                [src]="'assets/imgs/connectors/' + connector.key + '.svg'"
+                                [alt]="connector.config.name" />
+                        </div>
+
+                        <div class="provider-field field-single">
+                            <div class="field-title">Type</div>
+                            <div class="field-value">{{ getTypeDescription(connector.config.type) }}</div>
+                        </div>
+
+                        <div class="provider-field field-single" *ngIf="connector.config.coupon as c">
+                            <div class="field-title">Coupon</div>
+                            <div class="field-value field-coupon blink">
+                                <span class="name">{{ c.name }}</span>
+                                {{ c.description }}
+                            </div>
+                        </div>
+
+                        <div class="provider-field field-multiple">
+                            <div class="field-value">{{ connector.config.description }}</div>
+                        </div>
+
+                        <div class="provider-buttons">
+                            <a
+                                cButton
+                                color="light"
+                                [routerLink]="['/projects', projectId, 'credentials', 'create', connector.key]">
+                                Create
+                            </a>
+
+                            <div></div>
+
+                            @if (connector.config.url) {
+                                <a [href]="connector.config.url" target="_blank">Website</a>
+                            }
+                        </div>
+                    </c-card-body>
+                </c-card>
+            </c-col>
+        }
+    </c-row>
+</c-container>

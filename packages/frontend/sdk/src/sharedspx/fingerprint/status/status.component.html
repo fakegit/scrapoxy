@@ -1,0 +1,17 @@
+@switch (status) {
+    @case (EFingerprintStatus.ONLINE) {
+        <span cTooltip="Instance is online" cTooltipPlacement="top">
+            <svg cIcon name="cilPowerStandby" class="online"></svg>
+        </span>
+    }
+    @case (EFingerprintStatus.OFFLINE) {
+        <span cTooltip="Instance is offline" cTooltipPlacement="top">
+            <svg cIcon name="cilPowerStandby" class="offline"></svg>
+        </span>
+    }
+    @case (EFingerprintStatus.ERROR) {
+        <span [cTooltip]="error ?? 'Instance has an error'" cTooltipPlacement="top">
+            <svg cIcon name="cilPowerStandby" class="error"></svg>
+        </span>
+    }
+}

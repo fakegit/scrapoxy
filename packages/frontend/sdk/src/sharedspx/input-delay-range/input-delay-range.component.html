@@ -1,0 +1,57 @@
+<c-input-group>
+    <button cButton [color]="rangeEnabled ? 'success' : 'secondary'" variant="outline" (click)="toggleEnabled()">
+        @if (rangeEnabled) {
+            <svg cIcon name="cilCheckAlt"></svg>
+        } @else {
+            <svg cIcon name="cilX"></svg>
+        }
+    </button>
+
+    <input
+        type="text"
+        cFormControl
+        [ngClass]="{
+            'is-invalid': rangeEnabled && validValue === false,
+            'is-valid': rangeEnabled && validValue === true
+        }"
+        [placeholder]="placeholderMin"
+        [disabled]="disabled || !rangeEnabled"
+        [value]="rangeMin"
+        (keyup)="onMinChange($event)"
+        (focus)="markAsTouched()" />
+
+    <select cSelect [disabled]="disabled || !rangeEnabled" [value]="rangeMinType" (change)="onMinTypeChange($event)">
+        <option value="ms">milliseconds</option>
+        <option value="s">seconds</option>
+        <option value="min">minutes</option>
+        <option value="hour">hours</option>
+        <option value="day">days</option>
+        <option value="month">months</option>
+        <option value="year">years</option>
+    </select>
+
+    <span cInputGroupText>-</span>
+
+    <input
+        type="text"
+        cFormControl
+        [ngClass]="{
+            'is-invalid': rangeEnabled && validValue === false,
+            'is-valid': rangeEnabled && validValue === true
+        }"
+        [placeholder]="placeholderMax"
+        [disabled]="disabled || !rangeEnabled"
+        [value]="rangeMax"
+        (keyup)="onMaxChange($event)"
+        (focus)="markAsTouched()" />
+
+    <select cSelect [disabled]="disabled || !rangeEnabled" [value]="rangeMaxType" (change)="onMaxTypeChange($event)">
+        <option value="ms">milliseconds</option>
+        <option value="s">seconds</option>
+        <option value="min">minutes</option>
+        <option value="hour">hours</option>
+        <option value="day">days</option>
+        <option value="month">months</option>
+        <option value="year">years</option>
+    </select>
+</c-input-group>

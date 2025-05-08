@@ -1,0 +1,56 @@
+<ng-container [formGroup]="subForm">
+    @if (subForm.controls['country']; as c) {
+        <c-row>
+            <label cLabel cCol md="2" for="country">Country</label>
+
+            <c-col md="10">
+                <select cSelect id="country" formControlName="country">
+                    <option [ngValue]="null" disabled>----- Select Country ------</option>
+                    <option value="all">All</option>
+                    @for (country of countries; track country.code) {
+                        <option value="{{ country.code }}">{{ country.name }} ({{ country.code | uppercase }})</option>
+                    }
+                </select>
+            </c-col>
+        </c-row>
+    }
+    @if (subForm.controls['lifetime']; as c) {
+        <c-row>
+            <label cLabel cCol md="2" for="lifetime">TTL</label>
+
+            <c-col md="10">
+                <c-input-group class="has-validation">
+                    <input-lifetime
+                        cFormControl
+                        id="lifetime"
+                        formControlName="lifetime"
+                        [valid]="c.dirty || c.touched ? c.valid : undefined" />
+
+                    @if (c.dirty || c.touched) {
+                        <c-form-feedback [valid]="c.valid">
+                            @if (c.errors; as errs) {
+                                @if (errs['required']) {
+                                    <div>TTL is required.</div>
+                                }
+                                @if (errs['range']) {
+                                    <div>TTL must be between 1-59s, 1-59m or 1-24h.</div>
+                                }
+                            }
+                        </c-form-feedback>
+                    }
+                </c-input-group>
+            </c-col>
+        </c-row>
+    }
+    @if (subForm.controls['highEndPool']; as c) {
+        <c-row>
+            <label cLabel cCol md="2" for="highEndPool">High-end Pool</label>
+
+            <c-col md="10">
+                <c-form-check [switch]="true" sizing="lg">
+                    <input type="checkbox" cFormCheckInput id="highEndPool" formControlName="highEndPool" />
+                </c-form-check>
+            </c-col>
+        </c-row>
+    }
+</ng-container>

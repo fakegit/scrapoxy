@@ -1,0 +1,321 @@
+<div class="header">
+    <c-container fluid>
+        <c-breadcrumb>
+            <c-breadcrumb-item [url]="['/']">Home</c-breadcrumb-item>
+            <c-breadcrumb-item [url]="['/projects']">Projects</c-breadcrumb-item>
+            <c-breadcrumb-item [url]="['/projects', projectId]">
+                {{ form.controls['name'].value }}
+            </c-breadcrumb-item>
+            <c-breadcrumb-item [active]="true">Update</c-breadcrumb-item>
+        </c-breadcrumb>
+    </c-container>
+</div>
+
+<c-container fluid class="container-main">
+    <c-row>
+        <c-col>
+            <form cForm [formGroup]="form" (ngSubmit)="update()">
+                <c-card class="card-form">
+                    <c-card-header>Project Settings</c-card-header>
+
+                    <c-card-body class="loading" [ngClass]="{finished: !!project}">
+                        @if (form.controls['name']; as c) {
+                            <c-row>
+                                <label cLabel cCol md="4" for="name">Name</label>
+
+                                <c-col md="8">
+                                    <input
+                                        type="text"
+                                        cFormControl
+                                        id="name"
+                                        formControlName="name"
+                                        placeholder="Enter the name"
+                                        autocomplete="off"
+                                        data-form-type="other"
+                                        data-lpignore="true"
+                                        [valid]="c.dirty || c.touched ? c.valid : undefined" />
+
+                                    @if (c.dirty || c.touched) {
+                                        <c-form-feedback [valid]="c.valid">
+                                            @if (c.errors; as errs) {
+                                                @if (errs['required']) {
+                                                    <div>Name is required.</div>
+                                                }
+                                            }
+                                        </c-form-feedback>
+                                    }
+                                </c-col>
+                            </c-row>
+                        }
+
+                        <c-row>
+                            <label cLabel cCol md="4" for="username">Username</label>
+
+                            <c-col md="8">
+                                <c-input-group>
+                                    <input
+                                        type="text"
+                                        cFormControl
+                                        id="username"
+                                        value="{{ username }}"
+                                        readonly
+                                        autocomplete="off"
+                                        data-form-type="other"
+                                        data-lpignore="true" />
+
+                                    <button
+                                        cButton
+                                        color="secondary"
+                                        variant="outline"
+                                        type="button"
+                                        cTooltip="Copy username to clipboard"
+                                        cTooltipPlacement="top"
+                                        (click)="copyUsername()">
+                                        <svg cIcon name="cilClipboard"></svg>
+                                    </button>
+                                </c-input-group>
+                            </c-col>
+                        </c-row>
+
+                        <c-row>
+                            <label cLabel cCol md="4" for="password">Password</label>
+
+                            <c-col md="8">
+                                <c-input-group>
+                                    <input
+                                        [type]="passwordType"
+                                        cFormControl
+                                        id="password"
+                                        value="{{ password }}"
+                                        readonly
+                                        autocomplete="off"
+                                        data-form-type="other"
+                                        data-lpignore="true" />
+
+                                    <button
+                                        cButton
+                                        color="secondary"
+                                        variant="outline"
+                                        cTooltip="Show password"
+                                        cTooltipPlacement="top"
+                                        (click)="togglePasswordType()">
+                                        <svg cIcon name="cilZoom"></svg>
+                                    </button>
+
+                                    <button
+                                        cButton
+                                        color="secondary"
+                                        variant="outline"
+                                        type="button"
+                                        cTooltip="Renew token"
+                                        cTooltipPlacement="top"
+                                        (click)="renewProjectTokenWithConfirm()">
+                                        <svg cIcon name="cilLoopCircular"></svg>
+                                    </button>
+
+                                    <button
+                                        cButton
+                                        color="secondary"
+                                        variant="outline"
+                                        type="button"
+                                        cTooltip="Copy password to clipboard"
+                                        cTooltipPlacement="top"
+                                        (click)="copyPassword()">
+                                        <svg cIcon name="cilClipboard"></svg>
+                                    </button>
+                                </c-input-group>
+                            </c-col>
+                        </c-row>
+
+                        @if (form.controls['proxiesMin']; as c) {
+                            <c-row>
+                                <label cLabel cCol md="4" for="proxiesMin">Minimum proxies</label>
+
+                                <c-col md="8">
+                                    <input
+                                        type="text"
+                                        cFormControl
+                                        id="proxiesMin"
+                                        formControlName="proxiesMin"
+                                        placeholder="Enter the count of proxies when mode is CALM"
+                                        [valid]="c.dirty || c.touched ? c.valid : undefined" />
+
+                                    @if (c.dirty || c.touched) {
+                                        <c-form-feedback [valid]="c.valid">
+                                            @if (c.errors; as errs) {
+                                                @if (errs['required']) {
+                                                    <div>Minimum is required.</div>
+                                                }
+                                                @if (errs['min']) {
+                                                    <div>Minimum must be greater than 0.</div>
+                                                }
+                                            }
+                                        </c-form-feedback>
+                                    }
+                                </c-col>
+                            </c-row>
+                        }
+                        @if (form.controls['autoRotate']; as c) {
+                            <c-row>
+                                <label cLabel cCol md="4" for="autoRotate">Auto Rotate Proxies (ms)</label>
+
+                                <c-col md="8">
+                                    <input-delay-range
+                                        id="autoRotate"
+                                        formControlName="autoRotate"
+                                        placeholderMin="Min delay"
+                                        placeholderMax="Max delay"
+                                        [valid]="c.dirty || c.touched ? c.valid : undefined" />
+
+                                    @if (c.dirty || c.touched) {
+                                        <c-form-feedback [valid]="c.valid">
+                                            @if (c.errors; as errs) {
+                                                @if (errs['required']) {
+                                                    <div>Delay range is required.</div>
+                                                }
+                                                @if (errs['min']) {
+                                                    <div>Minimum should be at least 30s (30000ms)</div>
+                                                }
+                                                @if (errs['inverted']) {
+                                                    <div>Minimum should be less than maximum</div>
+                                                }
+                                            }
+                                        </c-form-feedback>
+                                    }
+                                </c-col>
+                            </c-row>
+                        }
+                        @if (form.controls['autoScaleUp']; as c) {
+                            <c-row>
+                                <label cLabel cCol md="4" for="autoScaleUp">Auto Scale Up</label>
+
+                                <c-col md="8">
+                                    <c-form-check [switch]="true" sizing="lg">
+                                        <input
+                                            type="checkbox"
+                                            cFormCheckInput
+                                            id="autoScaleUp"
+                                            formControlName="autoScaleUp" />
+                                    </c-form-check>
+                                </c-col>
+                            </c-row>
+                        }
+                        @if (form.controls['autoScaleDown']; as c) {
+                            <c-row>
+                                <label cLabel cCol md="4" for="autoScaleDown">Auto Scale Down</label>
+
+                                <c-col md="8">
+                                    <input-delay-optional
+                                        id="autoScaleDown"
+                                        formControlName="autoScaleDown"
+                                        placeholder="Enter the delay in milliseconds"
+                                        [valid]="c.dirty || c.touched ? c.valid : undefined" />
+
+                                    @if (c.dirty || c.touched) {
+                                        <c-form-feedback [valid]="c.valid">
+                                            @if (c.errors; as errs) {
+                                                @if (errs['required']) {
+                                                    <div>Delay is required.</div>
+                                                }
+                                                @if (errs['min']) {
+                                                    <div>Delay should be at least 30s (30000ms)</div>
+                                                }
+                                            }
+                                        </c-form-feedback>
+                                    }
+                                </c-col>
+                            </c-row>
+                        }
+                        @if (form.controls['mitm']; as c) {
+                            <c-row>
+                                <label cLabel cCol md="4" for="mitm">Intercept HTTPS requests with MITM</label>
+
+                                <c-col md="2">
+                                    <c-form-check [switch]="true" sizing="lg">
+                                        <input
+                                            type="checkbox"
+                                            cFormCheckInput
+                                            id="mitm"
+                                            formControlName="mitm"
+                                            (change)="onChangeMitm()" />
+                                    </c-form-check>
+                                </c-col>
+
+                                <c-col md="6">
+                                    <a href="/api/certificate/ca" target="_blank">Download CA certificate</a>
+                                </c-col>
+                            </c-row>
+                        }
+                        @if (form.controls['cookieSession']; as c) {
+                            <c-row>
+                                <label cLabel cCol md="4" for="cookieSession">
+                                    Keep the same proxy with cookie injection
+                                </label>
+
+                                <c-col md="8">
+                                    <c-form-check [switch]="true" sizing="lg">
+                                        <input
+                                            type="checkbox"
+                                            cFormCheckInput
+                                            id="cookieSession"
+                                            formControlName="cookieSession" />
+                                    </c-form-check>
+                                </c-col>
+                            </c-row>
+                        }
+                        @if (form.controls['useragentOverride']; as c) {
+                            <c-row>
+                                <label cLabel cCol md="4" for="useragentOverride">Override User-Agent</label>
+
+                                <c-col md="8">
+                                    <c-form-check [switch]="true" sizing="lg">
+                                        <input
+                                            type="checkbox"
+                                            cFormCheckInput
+                                            id="useragentOverride"
+                                            formControlName="useragentOverride" />
+                                    </c-form-check>
+                                </c-col>
+                            </c-row>
+                        }
+                        @if (form.controls['ciphersShuffle']; as c) {
+                            <c-row>
+                                <label cLabel cCol md="4" for="ciphersShuffle">Shuffle TLS Ciphersuite</label>
+
+                                <c-col md="8">
+                                    <c-form-check [switch]="true" sizing="lg">
+                                        <input
+                                            type="checkbox"
+                                            cFormCheckInput
+                                            id="ciphersShuffle"
+                                            formControlName="ciphersShuffle" />
+                                    </c-form-check>
+                                </c-col>
+                            </c-row>
+                        }
+                    </c-card-body>
+
+                    <c-card-footer>
+                        <button
+                            cButton
+                            color="primary"
+                            type="submit"
+                            [loading]="processingUpdate"
+                            [disabled]="!form.valid || form.pristine">
+                            Update
+                        </button>
+
+                        <button
+                            cButton
+                            color="danger"
+                            type="button"
+                            [loading]="processingRemove"
+                            (click)="removeProjectWithConfirm()">
+                            Delete
+                        </button>
+                    </c-card-footer>
+                </c-card>
+            </form>
+        </c-col>
+    </c-row>
+</c-container>
